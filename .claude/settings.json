@@ -15,7 +15,6 @@
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(git commit*)",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/require-review.sh"
           }
         ]
