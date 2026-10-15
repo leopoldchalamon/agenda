@@ -16,7 +16,9 @@
         "symfony/dotenv": "8.1.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "8.1.*",
+        "symfony/monolog-bundle": "^4.1",
         "symfony/runtime": "8.1.*",
+        "symfony/twig-bundle": "8.1.*",
         "symfony/uid": "8.1.*",
         "symfony/yaml": "8.1.*"
     },
@@ -87,6 +89,7 @@
     "require-dev": {
         "symfony/ai-mate": "^0.14.0",
         "symfony/ai-monolog-mate-extension": "^0.14.0",
-        "symfony/ai-symfony-mate-extension": "^0.14.0"
+        "symfony/ai-symfony-mate-extension": "^0.14.0",
+        "symfony/web-profiler-bundle": "8.1.*"
     }
 }

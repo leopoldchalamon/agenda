@@ -23,13 +23,16 @@ Installé (mesuré dans le conteneur `php`) :
 | FrankenPHP | 1.13 (Caddy 2.11, mode worker) |
 | Image Docker de base | `dunglas/frankenphp:1-php8.5` (template symfony-docker) |
 | Symfony AI Mate | 0.14 (dev) |
+| Doctrine ORM + PostgreSQL | ORM 3.7, DoctrineBundle 3.3, Migrations 4.0, PostgreSQL 16 |
+| `symfony/uid` | 8.1 |
+| Logs | MonologBundle 4.1 (`symfony/monolog-bundle`) |
+| Profiler | WebProfilerBundle 8.1 (`symfony/web-profiler-bundle`, dev) |
+| Twig | TwigBundle 8.1 (`symfony/twig-bundle`, requis par EasyAdmin) |
 
 Prévu, pas encore installé. Installer chaque paquet avec Composer dans le conteneur au démarrage de la fonctionnalité concernée :
 
 | Besoin | Paquet |
 |--------|--------|
-| Persistance | Doctrine ORM + PostgreSQL (`symfony/orm-pack`) |
-| Identifiants | `symfony/uid` |
 | API | API Platform (`api-platform/symfony`) |
 | Back-office | EasyAdmin (`easycorp/easyadmin-bundle`) |
 | Ingestion planifiée | Symfony Scheduler + Messenger |
