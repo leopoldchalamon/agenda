@@ -24,7 +24,7 @@ indent_style = unset
 [Makefile]
 indent_style = tab
 
-[{*.json,deptrac.yaml}]
+[{*.json,deptrac.yaml,.trivyignore.yaml}]
 indent_size = 2
 
 [phpunit.dist.xml]
