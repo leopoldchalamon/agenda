@@ -48,18 +48,22 @@ jobs:
       #   run: curl -v --insecure --fail-with-body https://localhost
       - name: Check Mercure reachability
         run: curl -vI --insecure --fail-with-body https://localhost/.well-known/mercure?topic=test
-      # Uncomment if Doctrine ORM is installed
-      # - name: Create test database
-      #   run: docker compose exec -T php bin/console -e test doctrine:database:create
-      # Uncomment if Doctrine Migrations is installed
-      # - name: Run migrations
-      #   run: docker compose exec -T php bin/console -e test doctrine:migrations:migrate --no-interaction
-      # Uncomment if PHPUnit is installed
-      # - name: Run PHPUnit
-      #   run: docker compose exec -T php bin/phpunit
-      # Uncomment if Doctrine ORM is installed
-      # - name: Doctrine Schema Validator
-      #   run: docker compose exec -T php bin/console -e test doctrine:schema:validate
+      - name: Create test database
+        run: docker compose exec -T php bin/console -e test doctrine:database:create
+      - name: Run migrations
+        run: docker compose exec -T php bin/console -e test doctrine:migrations:migrate --no-interaction --allow-no-migration
+      - name: Run PHPUnit
+        run: docker compose exec -T php bin/phpunit
+      - name: Doctrine Schema Validator
+        run: docker compose exec -T php bin/console -e test doctrine:schema:validate
+      - name: Check code style
+        run: docker compose exec -T php vendor/bin/php-cs-fixer fix --dry-run --diff
+      - name: Warm up dev container for PHPStan
+        run: docker compose exec -T php bin/console cache:warmup
+      - name: Run PHPStan
+        run: docker compose exec -T php vendor/bin/phpstan analyse --no-progress
+      - name: Run Deptrac
+        run: docker compose exec -T php vendor/bin/deptrac --no-progress
   lint:
     name: Lint
     runs-on: ubuntu-latest

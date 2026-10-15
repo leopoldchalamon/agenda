@@ -1,0 +1,76 @@
+# One block of three layers per bounded context. Add a block when a new context is created.
+deptrac:
+  paths:
+    - ./src
+
+  layers:
+    - name: Framework
+      collectors:
+        - { type: classLike, value: '^(Symfony|Doctrine|ApiPlatform|EasyCorp|Lexik|Monolog|Twig|Lcobucci)\\.*' }
+
+    - name: SharedDomain
+      collectors:
+        - { type: classLike, value: '^App\\Shared\\Domain\\.*' }
+    - name: SharedInfrastructure
+      collectors:
+        - { type: classLike, value: '^App\\Shared\\Infrastructure\\.*' }
+
+    - name: SourceDomain
+      collectors:
+        - { type: classLike, value: '^App\\Source\\Domain\\.*' }
+    - name: SourceApplication
+      collectors:
+        - { type: classLike, value: '^App\\Source\\Application\\.*' }
+    - name: SourceInfrastructure
+      collectors:
+        - { type: classLike, value: '^App\\Source\\Infrastructure\\.*' }
+
+    - name: IngestionDomain
+      collectors:
+        - { type: classLike, value: '^App\\Ingestion\\Domain\\.*' }
+    - name: IngestionApplication
+      collectors:
+        - { type: classLike, value: '^App\\Ingestion\\Application\\.*' }
+    - name: IngestionInfrastructure
+      collectors:
+        - { type: classLike, value: '^App\\Ingestion\\Infrastructure\\.*' }
+
+    - name: EventDomain
+      collectors:
+        - { type: classLike, value: '^App\\Event\\Domain\\.*' }
+    - name: EventApplication
+      collectors:
+        - { type: classLike, value: '^App\\Event\\Application\\.*' }
+    - name: EventInfrastructure
+      collectors:
+        - { type: classLike, value: '^App\\Event\\Infrastructure\\.*' }
+
+    - name: AccountDomain
+      collectors:
+        - { type: classLike, value: '^App\\Account\\Domain\\.*' }
+    - name: AccountApplication
+      collectors:
+        - { type: classLike, value: '^App\\Account\\Application\\.*' }
+    - name: AccountInfrastructure
+      collectors:
+        - { type: classLike, value: '^App\\Account\\Infrastructure\\.*' }
+
+  ruleset:
+    SharedDomain: ~
+    SharedInfrastructure: [SharedDomain, Framework]
+
+    SourceDomain: [SharedDomain]
+    SourceApplication: [SourceDomain, SharedDomain]
+    SourceInfrastructure: [SourceApplication, SourceDomain, SharedDomain, SharedInfrastructure, Framework]
+
+    IngestionDomain: [SharedDomain]
+    IngestionApplication: [IngestionDomain, SharedDomain]
+    IngestionInfrastructure: [IngestionApplication, IngestionDomain, SharedDomain, SharedInfrastructure, Framework]
+
+    EventDomain: [SharedDomain]
+    EventApplication: [EventDomain, SharedDomain]
+    EventInfrastructure: [EventApplication, EventDomain, SharedDomain, SharedInfrastructure, Framework]
+
+    AccountDomain: [SharedDomain]
+    AccountApplication: [AccountDomain, SharedDomain]
+    AccountInfrastructure: [AccountApplication, AccountDomain, SharedDomain, SharedInfrastructure, Framework]
