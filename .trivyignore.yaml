@@ -1,0 +1,8 @@
+vulnerabilities:
+  # golang.org/x/net v0.59.0 bundled in the upstream FrankenPHP binary.
+  # Remove once dunglas/frankenphp ships a build with x/net >= 0.60.0.
+  - id: CVE-2026-78669
+    paths:
+      - usr/local/bin/frankenphp
+    expired_at: 2026-11-15
+    statement: Waiting for an upstream FrankenPHP release

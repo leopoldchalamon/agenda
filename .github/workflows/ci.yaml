@@ -131,8 +131,10 @@ jobs:
       - name: Scan production image
         run: >-
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+          -v "$PWD/.trivyignore.yaml:/.trivyignore.yaml:ro"
           aquasec/trivy:0.71.1 image
           --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+          --ignorefile /.trivyignore.yaml
           app-php-prod
 
   lint:
