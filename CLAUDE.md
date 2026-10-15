@@ -37,7 +37,7 @@ Prévu, pas encore installé. Installer chaque paquet avec Composer dans le cont
 | Back-office | EasyAdmin (`easycorp/easyadmin-bundle`) |
 | Ingestion planifiée | Symfony Scheduler + Messenger |
 | Comptes et authentification | SecurityBundle + JWT (`lexik/jwt-authentication-bundle`) |
-| Tests | PHPUnit (`symfony/test-pack`) |
+| Tests | PHPUnit (`symfony/test-pack`, qui s'installe en `phpunit/phpunit`, `symfony/browser-kit`, `symfony/css-selector`) |
 | Analyse statique | PHPStan + `phpstan/phpstan-symfony` + `phpstan/phpstan-doctrine` |
 | Style de code | PHP-CS-Fixer (`friendsofphp/php-cs-fixer`) |
 | Règles de couches | Deptrac (`deptrac/deptrac`) |
