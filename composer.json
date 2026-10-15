@@ -87,6 +87,11 @@
         }
     },
     "require-dev": {
+        "deptrac/deptrac": "^4.7",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.3",
+        "phpstan/phpstan-doctrine": "2.0.27",
+        "phpstan/phpstan-symfony": "^2.1",
         "phpunit/phpunit": "^13.4",
         "symfony/ai-mate": "^0.14.0",
         "symfony/ai-monolog-mate-extension": "^0.14.0",
