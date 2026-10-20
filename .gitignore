@@ -22,3 +22,5 @@
 ###< friendsofphp/php-cs-fixer ###
 
 /.deptrac.cache
+
+/coverage/

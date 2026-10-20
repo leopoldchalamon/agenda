@@ -3,8 +3,8 @@ cmd=$(jq -r '.tool_input.command // empty')
 grep -qE '(^|[;&|[:space:]])git[[:space:]]+commit\b' <<<"$cmd" || exit 0
 
 if grep -qE '(^|[;&|[:space:]])git[[:space:]]+(add|rm|mv)\b|git[[:space:]]+commit[^;&|]*[[:space:]]-[a-zA-Z]*a' <<<"$cmd"; then
-  echo "Stage files in a separate command before committing (no git add/rm/mv or commit -a in the same command), so the staged diff can be checked." >&2
-  exit 2
+	echo "Stage files in a separate command before committing (no git add/rm/mv or commit -a in the same command), so the staged diff can be checked." >&2
+	exit 2
 fi
 
 cd "$CLAUDE_PROJECT_DIR" || exit 0

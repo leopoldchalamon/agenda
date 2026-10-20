@@ -6,6 +6,9 @@ on:
     branches:
       - main
   pull_request: ~
+  schedule:
+    # Weekly security scan, Monday 06:00 UTC
+    - cron: '0 6 * * 1'
   workflow_dispatch: ~
 
 permissions:
@@ -16,46 +19,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
-    name: Tests
+  quality:
+    name: Quality
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-      - name: Build Docker images
-        uses: docker/bake-action@v7
-        with:
-          pull: true
-          load: true
-          source: .
-          files: |
-            compose.yaml
-            compose.override.yaml
-          set: |
-            *.cache-from=type=gha,scope=${{github.ref}}
-            *.cache-from=type=gha,scope=refs/heads/main
-            *.cache-to=type=gha,scope=${{github.ref}},mode=max
-      - name: Start services
-        run: docker compose up --wait --no-build
-      - name: Check HTTP reachability
-        run: curl -v --fail-with-body http://localhost
-      # Uncomment when the homepage is configured, or change the path to check
-      # - name: Check HTTPS reachability
-      #   run: curl -v --insecure --fail-with-body https://localhost
-      - name: Check Mercure reachability
-        run: curl -vI --insecure --fail-with-body https://localhost/.well-known/mercure?topic=test
-      - name: Create test database
-        run: docker compose exec -T php bin/console -e test doctrine:database:create
-      - name: Run migrations
-        run: docker compose exec -T php bin/console -e test doctrine:migrations:migrate --no-interaction --allow-no-migration
-      - name: Run PHPUnit
-        run: docker compose exec -T php bin/phpunit
-      - name: Doctrine Schema Validator
-        run: docker compose exec -T php bin/console -e test doctrine:schema:validate
+      - name: Start stack
+        uses: ./.github/actions/start-stack
       - name: Check code style
         run: docker compose exec -T php vendor/bin/php-cs-fixer fix --dry-run --diff
       - name: Warm up dev container for PHPStan
@@ -64,8 +38,108 @@ jobs:
         run: docker compose exec -T php vendor/bin/phpstan analyse --no-progress
       - name: Run Deptrac
         run: docker compose exec -T php vendor/bin/deptrac --no-progress
+
+  tests:
+    name: Tests
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Start stack
+        uses: ./.github/actions/start-stack
+      - name: Check HTTP reachability
+        run: curl -v --fail-with-body http://localhost
+      - name: Check Mercure reachability
+        run: curl -vI --insecure --fail-with-body https://localhost/.well-known/mercure?topic=test
+      - name: Create test database
+        run: docker compose exec -T php bin/console -e test doctrine:database:create
+      - name: Run migrations
+        run: docker compose exec -T php bin/console -e test doctrine:migrations:migrate --no-interaction --allow-no-migration
+      - name: Doctrine Schema Validator
+        run: docker compose exec -T php bin/console -e test doctrine:schema:validate
+      - name: Run PHPUnit with coverage
+        run: >-
+          docker compose exec -T -e XDEBUG_MODE=coverage php bin/phpunit
+          --coverage-cobertura coverage/cobertura.xml
+          --coverage-text=coverage/coverage.txt
+      - name: Write coverage summary
+        run: |
+          {
+            echo '### Coverage'
+            echo '```'
+            cat coverage/coverage.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 30
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Audit Composer dependencies
+        run: composer audit --locked --abandoned=report
+
+  sast:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.180.0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Run Semgrep
+        run: semgrep scan --config p/php --metrics=off --error src
+
+  image-scan:
+    name: Image scan (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Build production image
+        uses: docker/bake-action@v7
+        with:
+          pull: true
+          load: true
+          source: .
+          files: |
+            compose.yaml
+            compose.prod.yaml
+          targets: php
+          set: |
+            *.cache-from=type=gha,scope=prod-${{github.ref}}
+            *.cache-from=type=gha,scope=prod-refs/heads/main
+            *.cache-to=type=gha,scope=prod-${{github.ref}},mode=max
+      - name: Scan production image
+        run: >-
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+          -v "$PWD/.trivyignore.yaml:/.trivyignore.yaml:ro"
+          aquasec/trivy:0.71.1 image
+          --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+          --ignorefile /.trivyignore.yaml
+          app-php-prod
+
   lint:
     name: Lint
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -81,13 +155,12 @@ jobs:
         uses: super-linter/super-linter/slim@v8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_CHECKOV: false
-          VALIDATE_TRIVY: false
-          VALIDATE_BIOME_FORMAT: false
-          VALIDATE_BIOME_LINT: false
-          VALIDATE_PYTHON_BLACK: false
-          # PHP is checked in the Docker-based tests job; super-linter ships PHP 8.4
-          VALIDATE_PHP_BUILTIN: false
-          VALIDATE_PHP_PHPCS: false
-          VALIDATE_PHP_PHPSTAN: false
-          VALIDATE_PHP_PSALM: false
+          # Setting any VALIDATE_* to true disables every other linter.
+          # PHP is checked in the Docker-based jobs; Markdown docs are in French.
+          VALIDATE_BASH: true
+          VALIDATE_DOCKERFILE_HADOLINT: true
+          VALIDATE_EDITORCONFIG: true
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: true
+          VALIDATE_GITLEAKS: true
+          VALIDATE_YAML: true
