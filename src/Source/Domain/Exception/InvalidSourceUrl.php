@@ -10,4 +10,9 @@ final class InvalidSourceUrl extends \InvalidArgumentException
     {
         return new self(\sprintf('"%s" is not a valid http(s) URL.', $value));
     }
+
+    public static function tooLong(int $maxLength): self
+    {
+        return new self(\sprintf('Source URL cannot exceed %d characters.', $maxLength));
+    }
 }

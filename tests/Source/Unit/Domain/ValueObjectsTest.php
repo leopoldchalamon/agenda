@@ -60,6 +60,13 @@ final class ValueObjectsTest extends TestCase
         self::assertSame('https://example.org/agenda.ics', new SourceUrl('https://example.org/agenda.ics')->value);
     }
 
+    public function testSourceUrlAcceptsMaximumLength(): void
+    {
+        $url = 'https://example.org/'.str_repeat('a', 2028);
+
+        self::assertSame($url, new SourceUrl($url)->value);
+    }
+
     #[DataProvider('invalidUrls')]
     public function testSourceUrlThrowsWhenInvalid(string $url): void
     {
@@ -74,6 +81,7 @@ final class ValueObjectsTest extends TestCase
         yield 'not an url' => ['agenda'];
         yield 'ftp scheme' => ['ftp://example.org/agenda.ics'];
         yield 'file scheme' => ['file:///etc/passwd'];
+        yield 'too long' => ['https://example.org/'.str_repeat('a', 2029)];
     }
 
     public function testFetchIntervalDefaultsTo24Hours(): void

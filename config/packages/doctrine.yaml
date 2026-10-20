@@ -16,7 +16,13 @@ doctrine:
         # One mapping per bounded context, added with its first record:
         # dir: '%kernel.project_dir%/src/<Context>/Infrastructure/Persistence/Entity'
         # prefix: 'App\<Context>\Infrastructure\Persistence\Entity'
-        mappings: {}
+        mappings:
+            Source:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Source/Infrastructure/Persistence/Entity'
+                prefix: 'App\Source\Infrastructure\Persistence\Entity'
+                alias: Source
 
 when@test:
     doctrine:
