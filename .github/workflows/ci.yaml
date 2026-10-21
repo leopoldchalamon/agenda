@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request: ~
   schedule:
     # Weekly security scan, Monday 06:00 UTC
