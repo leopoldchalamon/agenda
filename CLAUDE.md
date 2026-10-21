@@ -28,15 +28,16 @@ Installé (mesuré dans le conteneur `php`) :
 | Logs | MonologBundle 4.1 (`symfony/monolog-bundle`) |
 | Profiler | WebProfilerBundle 8.1 (`symfony/web-profiler-bundle`, dev) |
 | Twig | TwigBundle 8.1 (`symfony/twig-bundle`, requis par EasyAdmin) |
+| Back-office | EasyAdmin 5.7 (`easycorp/easyadmin-bundle`) |
+| Sécurité | SecurityBundle 8.1 (`symfony/security-bundle`, dépendance d'EasyAdmin, sans authentification) |
 
 Prévu, pas encore installé. Installer chaque paquet avec Composer dans le conteneur au démarrage de la fonctionnalité concernée :
 
 | Besoin | Paquet |
 |--------|--------|
 | API | API Platform (`api-platform/symfony`) |
-| Back-office | EasyAdmin (`easycorp/easyadmin-bundle`) |
 | Ingestion planifiée | Symfony Scheduler + Messenger |
-| Comptes et authentification | SecurityBundle + JWT (`lexik/jwt-authentication-bundle`) |
+| Comptes et authentification | JWT (`lexik/jwt-authentication-bundle`) et configuration de SecurityBundle |
 | Tests | PHPUnit (`symfony/test-pack`, qui s'installe en `phpunit/phpunit`, `symfony/browser-kit`, `symfony/css-selector`) |
 | Analyse statique | PHPStan + `phpstan/phpstan-symfony` + `phpstan/phpstan-doctrine` |
 | Style de code | PHP-CS-Fixer (`friendsofphp/php-cs-fixer`) |
