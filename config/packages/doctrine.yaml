@@ -23,6 +23,18 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Source/Infrastructure/Persistence/Entity'
                 prefix: 'App\Source\Infrastructure\Persistence\Entity'
                 alias: Source
+            Ingestion:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Ingestion/Infrastructure/Persistence/Entity'
+                prefix: 'App\Ingestion\Infrastructure\Persistence\Entity'
+                alias: Ingestion
+            Event:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Event/Infrastructure/Persistence/Entity'
+                prefix: 'App\Event\Infrastructure\Persistence\Entity'
+                alias: Event
 
 when@test:
     doctrine:
