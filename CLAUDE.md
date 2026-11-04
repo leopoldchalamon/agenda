@@ -30,13 +30,15 @@ Installé (mesuré dans le conteneur `php`) :
 | Twig | TwigBundle 8.1 (`symfony/twig-bundle`, requis par EasyAdmin) |
 | Back-office | EasyAdmin 5.7 (`easycorp/easyadmin-bundle`) |
 | Sécurité | SecurityBundle 8.1 (`symfony/security-bundle`, dépendance d'EasyAdmin, sans authentification) |
+| Ingestion planifiée | Messenger 8.1 + Scheduler 8.1 (`symfony/messenger`, `symfony/scheduler`, transport Doctrine `symfony/doctrine-messenger`) |
+| Client HTTP | HttpClient 8.1 (`symfony/http-client`, fetchers) |
+| Parseur iCal | `sabre/vobject` 5.0 |
 
 Prévu, pas encore installé. Installer chaque paquet avec Composer dans le conteneur au démarrage de la fonctionnalité concernée :
 
 | Besoin | Paquet |
 |--------|--------|
 | API | API Platform (`api-platform/symfony`) |
-| Ingestion planifiée | Symfony Scheduler + Messenger |
 | Comptes et authentification | JWT (`lexik/jwt-authentication-bundle`) et configuration de SecurityBundle |
 | Tests | PHPUnit (`symfony/test-pack`, qui s'installe en `phpunit/phpunit`, `symfony/browser-kit`, `symfony/css-selector`) |
 | Analyse statique | PHPStan + `phpstan/phpstan-symfony` + `phpstan/phpstan-doctrine` |
